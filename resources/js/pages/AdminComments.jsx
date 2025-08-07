@@ -5,6 +5,8 @@ const AdminComments = () => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [updating, setUpdating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const navigate = useNavigate();
 
@@ -25,44 +27,75 @@ const AdminComments = () => {
 
   const handleDelete = async (comment) => {
     if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    
     try {
-      // Get auth token for admin operations
-      const token = localStorage.getItem('auth_token');
-      const res = await fetch(`/api/posts/${comment.post_id}/comments/${comment.id}`, {
+      // First get CSRF cookie for session authentication
+      await fetch('/sanctum/csrf-cookie', {
+        credentials: 'include',
+      });
+
+      // Get XSRF token from cookie
+      const xsrfToken = (() => {
+        const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+      })();
+
+      const response = await fetch(`/api/posts/${comment.post_id}/comments/${comment.id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
+          'X-XSRF-TOKEN': xsrfToken,
         },
         credentials: 'include',
       });
-      if (!res.ok) throw new Error();
-      setRefresh(r => r + 1);
-    } catch {
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        alert(data.error || data.message || 'Failed to delete comment.');
+      } else {
+        setRefresh(r => r + 1);
+      }
+    } catch (error) {
       alert('Failed to delete comment.');
     }
   };
 
-  const handleEdit = (comment) => {
+  const handleEdit = async (comment) => {
     const newContent = prompt('Edit comment:', comment.content);
     if (newContent === null || newContent.trim() === '' || newContent === comment.content) return;
-    // Get auth token for admin operations
-    const token = localStorage.getItem('auth_token');
-    fetch(`/api/posts/${comment.post_id}/comments/${comment.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ content: newContent }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) setRefresh(r => r + 1);
-        else alert(data.error || 'Failed to update comment.');
-      })
-      .catch(() => alert('Failed to update comment.'));
+    
+    try {
+      // First get CSRF cookie for session authentication
+      await fetch('/sanctum/csrf-cookie', {
+        credentials: 'include',
+      });
+
+      // Get XSRF token from cookie
+      const xsrfToken = (() => {
+        const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+      })();
+
+      const response = await fetch(`/api/posts/${comment.post_id}/comments/${comment.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-XSRF-TOKEN': xsrfToken,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ content: newContent }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        alert(data.error || data.message || 'Failed to update comment.');
+      } else {
+        setRefresh(r => r + 1);
+      }
+    } catch (error) {
+      alert('Failed to update comment.');
+    }
   };
 
   return (
