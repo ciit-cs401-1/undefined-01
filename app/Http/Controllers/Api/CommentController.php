@@ -31,11 +31,11 @@ class CommentController extends Controller
     {
         try {
             $request->validate([
-                'content' => 'required|string|max:1000',
+                'content' => 'required|string|max:250000',
             ], [
                 'content.required' => 'Comment content is required.',
                 'content.string' => 'Comment content must be a valid text string.',
-                'content.max' => 'Comment content cannot exceed 1000 characters.',
+                'content.max' => 'Comment content cannot exceed 250000 characters.',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -132,11 +132,11 @@ class CommentController extends Controller
 
         try {
             $request->validate([
-                'content' => 'required|string|max:1000',
+                'content' => 'required|string|max:250000',
             ], [
                 'content.required' => 'Comment content is required.',
                 'content.string' => 'Comment content must be a valid text string.',
-                'content.max' => 'Comment content cannot exceed 1000 characters.',
+                'content.max' => 'Comment content cannot exceed 250000 characters.',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([

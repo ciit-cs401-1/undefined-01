@@ -161,6 +161,14 @@ const UserPost = () => {
   const handleEditSave = async () => {
     setEditLoading(true);
     setEditError('');
+
+    // Client-side validation for content length
+    if (editContent.length > 250000) {
+      setEditError('Post content cannot exceed 250000 characters.');
+      setEditLoading(false);
+      return;
+    }
+
     try {
       // Step 1: Get CSRF cookie from Sanctum
       await fetch('/sanctum/csrf-cookie', {
@@ -338,6 +346,14 @@ const UserPost = () => {
     e.preventDefault();
     setCommentError('');
     setCommentLoading(true);
+
+    // Client-side validation for comment length
+    if (commentContent.length > 250000) {
+      setCommentError('Comment cannot exceed 250000 characters.');
+      setCommentLoading(false);
+      return;
+    }
+
     try {
       // First get CSRF cookie
       await fetch('/sanctum/csrf-cookie', {
@@ -416,6 +432,14 @@ const UserPost = () => {
     e.preventDefault();
     setCommentError('');
     setCommentLoading(true);
+
+    // Client-side validation for comment length
+    if (editingCommentContent.length > 250000) {
+      setCommentError('Comment cannot exceed 250000 characters.');
+      setCommentLoading(false);
+      return;
+    }
+
     try {
       // First get CSRF cookie
       await fetch('/sanctum/csrf-cookie', {
@@ -507,7 +531,26 @@ const UserPost = () => {
             <div className="edit-container">
               <input className="edit-title" type="text" value={editTitle} onChange={e=>setEditTitle(e.target.value)} required/>
 
-              <textarea className="edit-content" value={editContent} onChange={e=>setEditContent(e.target.value)} required rows={6} />
+              <textarea 
+                className="edit-content" 
+                value={editContent} 
+                onChange={e=>setEditContent(e.target.value)} 
+                required 
+                rows={8} 
+                maxLength={250000}
+                placeholder="Write your post content... (Supports paragraphs and line breaks)"
+                style={{
+                  minHeight: '200px',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  lineHeight: '1.5'
+                }}
+              />
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', marginBottom: '16px'}}>
+                <span style={{fontSize: '0.8rem', color: editContent.length > 250000 ? '#dc2626' : '#666'}}>
+                  {editContent.length}/250000 characters
+                </span>
+              </div>
 
               {/* Image Upload Section */}
               <div style={{ marginBottom: '1rem' }}>
@@ -632,12 +675,12 @@ const UserPost = () => {
               {editError && <div className="user-error-message">{editError}</div>}
 
               <div className="edit-btns">
-                <button className="save-btn" type="button" onClick={handleEditSave} disabled={editLoading}>{editLoading ? 'Saving...' : 'Save'}</button>
+                <button className="save-btn" type="button" onClick={handleEditSave} disabled={editLoading || editContent.length > 250000}>{editLoading ? 'Saving...' : 'Save'}</button>
                 <button className="cancel-btn" type="button" onClick={cancelEdit}>Cancel</button>
               </div>
             </div>
           ) : (
-            <div className="post-body">{post.content}</div>
+            <div className="post-body" style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word'}}>{post.content}</div>
           )}
 
           <div className="engagement-footer">
@@ -662,18 +705,30 @@ const UserPost = () => {
 
           {user ? (
             <form className="comment-form" onSubmit={handleCommentSubmit}>
-              <input
-                type="text"
+              <textarea
                 value={commentContent}
                 onChange={e => setCommentContent(e.target.value)}
-                placeholder="Write a comment..."
+                placeholder="Write a comment... (Supports paragraphs and line breaks)"
                 required
                 disabled={commentLoading}
                 className='comment-field'
+                maxLength={250000}
+                rows={3}
+                style={{
+                  minHeight: '80px',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  lineHeight: '1.5'
+                }}
               />
-              <button className="submit-comment" type="submit" disabled={commentLoading || !commentContent.trim()}>
-                {commentLoading ? 'Posting...' : 'Post'}
-              </button>
+              <div className="comment-meta" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px'}}>
+                <span className={`character-count ${commentContent.length > 250000 ? 'over-limit' : ''}`} style={{fontSize: '0.8rem', color: commentContent.length > 250000 ? '#dc2626' : '#666'}}>
+                  {commentContent.length}/250000 characters
+                </span>
+                <button className="submit-comment" type="submit" disabled={commentLoading || !commentContent.trim() || commentContent.length > 250000}>
+                  {commentLoading ? 'Posting...' : 'Post'}
+                </button>
+              </div>
             </form>
           ) : (
             <div style={{marginBottom:24,color:'#888'}}>Log in to comment.</div>
@@ -707,20 +762,49 @@ const UserPost = () => {
                   )}
                   </div>
                   {editingCommentId === comment.id ? (
-                    <form onSubmit={e => handleEditCommentSubmit(e, comment.id)} style={{display:'flex',gap:8,margin:'6px 0'}}>
-                      <input
-                        className='edit-comment'
-                        type="text"
-                        value={editingCommentContent}
-                        onChange={e => setEditingCommentContent(e.target.value)}
-                        required
-                        disabled={commentLoading}
-                      />
-                      <button className='save-btn' type="submit" disabled={commentLoading || !editingCommentContent.trim()}>Save</button>
-                      <button className='cancel-btn' type="button" onClick={() => {setEditingCommentId(null);setEditingCommentContent('');}}>Cancel</button>
-                    </form>
+                    <div style={{margin:'6px 0'}}>
+                      <form onSubmit={e => handleEditCommentSubmit(e, comment.id)}>
+                        <textarea
+                          className='edit-comment'
+                          value={editingCommentContent}
+                          onChange={e => setEditingCommentContent(e.target.value)}
+                          required
+                          disabled={commentLoading}
+                          maxLength={250000}
+                          rows={3}
+                          style={{
+                            width: '100%',
+                            minHeight: '80px',
+                            resize: 'vertical',
+                            fontFamily: 'inherit',
+                            lineHeight: '1.5',
+                            padding: '8px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            marginBottom: '8px'
+                          }}
+                        />
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                          <span style={{fontSize: '0.8rem', color: editingCommentContent.length > 250000 ? '#dc2626' : '#666'}}>
+                            {editingCommentContent.length}/250000 characters
+                          </span>
+                          <div style={{display: 'flex', gap: '8px'}}>
+                            <button className='save-btn' type="submit" disabled={commentLoading || !editingCommentContent.trim() || editingCommentContent.length > 250000}>Save</button>
+                            <button className='cancel-btn' type="button" onClick={() => {setEditingCommentId(null);setEditingCommentContent('');}}>Cancel</button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
                   ) : (
-                    <div style={{fontSize:'0.97rem',color:'#333',margin:'2px 0 4px 0'}}>{comment.content}</div>
+                    <div style={{
+                      fontSize:'0.97rem',
+                      color:'#333',
+                      margin:'2px 0 4px 0',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word'
+                    }}>
+                      {comment.content}
+                    </div>
                   )}
 
                 </div>

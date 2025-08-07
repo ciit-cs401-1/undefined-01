@@ -59,6 +59,39 @@ class CommentTest extends TestCase
     }
 
     /** @test */
+    public function authenticated_user_can_create_multiline_comment()
+    {
+        Sanctum::actingAs($this->user);
+
+        $multilineContent = "This is a test comment\nwith multiple lines\n\nAnd paragraphs too!";
+
+        $response = $this->postJson("/api/posts/{$this->post->id}/comments", [
+            'content' => $multilineContent
+        ]);
+
+        $response->assertStatus(200)
+                ->assertJson([
+                    'success' => true,
+                ])
+                ->assertJsonStructure([
+                    'success',
+                    'comment' => [
+                        'id',
+                        'content',
+                        'user_id',
+                        'post_id',
+                        'user'
+                    ]
+                ]);
+
+        $this->assertDatabaseHas('comments', [
+            'content' => $multilineContent,
+            'user_id' => $this->user->id,
+            'post_id' => $this->post->id
+        ]);
+    }
+
+    /** @test */
     public function unauthenticated_user_cannot_create_comment()
     {
         $response = $this->postJson("/api/posts/{$this->post->id}/comments", [
@@ -94,7 +127,7 @@ class CommentTest extends TestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/posts/{$this->post->id}/comments", [
-            'content' => str_repeat('a', 1001) // Exceeds 1000 character limit
+            'content' => str_repeat('a', 250001) // Exceeds 250000 character limit
         ]);
 
         $response->assertStatus(422)

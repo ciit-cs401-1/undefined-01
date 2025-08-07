@@ -107,6 +107,14 @@ const AdminEditPostPage = () => {
       setSaving(false);
       return;
     }
+
+    // Client-side validation for content length
+    if (content.length > 250000) {
+      setError('Post content cannot exceed 250000 characters.');
+      setSaving(false);
+      return;
+    }
+
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
@@ -164,7 +172,27 @@ const AdminEditPostPage = () => {
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-1">Content</label>
-          <textarea className="w-full border rounded px-3 py-2" rows={8} value={content} onChange={e=>setContent(e.target.value)} disabled={saving} required />
+          <textarea 
+            className="w-full border rounded px-3 py-2" 
+            rows={10} 
+            value={content} 
+            onChange={e=>setContent(e.target.value)} 
+            disabled={saving} 
+            required 
+            maxLength={250000}
+            placeholder="Write your post content... (Supports paragraphs and line breaks)"
+            style={{
+              minHeight: '250px',
+              resize: 'vertical',
+              fontFamily: 'inherit',
+              lineHeight: '1.5'
+            }}
+          />
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px'}}>
+            <span style={{fontSize: '0.8rem', color: content.length > 250000 ? '#dc2626' : '#666'}}>
+              {content.length}/250000 characters
+            </span>
+          </div>
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-1">Category</label>
@@ -225,7 +253,7 @@ const AdminEditPostPage = () => {
         {error && <div className="error-message">{error}</div>}
         {success && <div style={{color:'#22c55e',marginBottom:8}}>{success}</div>}
         <div className="flex gap-4 mt-6">
-          <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+          <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={saving || content.length > 250000}>{saving ? 'Saving...' : 'Save Changes'}</button>
           <button type="button" className="bg-gray-300 text-gray-800 px-5 py-2 rounded font-semibold" onClick={()=>navigate('/admin/posts')} disabled={saving}>Cancel</button>
           <button type="button" className="bg-red-600 text-white px-5 py-2 rounded font-semibold ml-auto" onClick={handleDelete} disabled={saving}>Delete Post</button>
         </div>

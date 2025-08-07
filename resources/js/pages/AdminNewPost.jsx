@@ -36,6 +36,13 @@ const AdminNewPost = () => {
       setLoading(false);
       return;
     }
+
+    // Client-side validation for content length
+    if (content.length > 250000) {
+      setError('Post content cannot exceed 250000 characters.');
+      setLoading(false);
+      return;
+    }
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
@@ -96,7 +103,27 @@ const AdminNewPost = () => {
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-1">Content</label>
-          <textarea className="w-full border rounded px-3 py-2" rows={6} value={content} onChange={e=>setContent(e.target.value)} disabled={loading} required />
+          <textarea 
+            className="w-full border rounded px-3 py-2" 
+            rows={8} 
+            value={content} 
+            onChange={e=>setContent(e.target.value)} 
+            disabled={loading} 
+            required 
+            maxLength={250000}
+            placeholder="Write your post content... (Supports paragraphs and line breaks)"
+            style={{
+              minHeight: '200px',
+              resize: 'vertical',
+              fontFamily: 'inherit',
+              lineHeight: '1.5'
+            }}
+          />
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px'}}>
+            <span style={{fontSize: '0.8rem', color: content.length > 250000 ? '#dc2626' : '#666'}}>
+              {content.length}/250000 characters
+            </span>
+          </div>
         </div>
         <div className="mb-4">
           <label className="block font-medium mb-1">Category</label>
@@ -138,7 +165,7 @@ const AdminNewPost = () => {
         </div>
         {error && <div className="error-message">{error}</div>}
         {success && <div style={{color:'#22c55e',marginBottom:8}}>{success}</div>}
-        <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={loading}>{loading ? 'Creating...' : 'Create Post'}</button>
+        <button type="submit" className="bg-blue-600 text-white px-5 py-2 rounded font-semibold" disabled={loading || content.length > 250000}>{loading ? 'Creating...' : 'Create Post'}</button>
       </form>
     </div>
     </div>

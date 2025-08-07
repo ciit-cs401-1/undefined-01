@@ -208,7 +208,7 @@ const Posts = ({ refresh }) => {
                         <span className="featured-badge">⭐ Featured</span>
                       </div>
                     </div>
-                    <p className="featured-post-content">{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>
+                    <p className="featured-post-content" style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word'}}>{post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}</p>
                     <div className="featured-post-meta">
                       <div className="meta-left">
                         <div style={{display: 'flex', alignItems: 'center'}}>
@@ -376,7 +376,7 @@ const Posts = ({ refresh }) => {
                       <span style={{color:'#bbb',fontSize:'0.9rem'}}>👁️ {post.views} views</span>
                     )}
                   </div>
-                  <p style={{margin:'2px 0 0 0',fontSize:'0.97rem',color:'#444',lineHeight:'1.4'}}>{post.content.length > 80 ? post.content.slice(0, 80) + '...' : post.content}</p>
+                  <p style={{margin:'2px 0 0 0',fontSize:'0.97rem',color:'#444',lineHeight:'1.4',whiteSpace:'pre-wrap',wordBreak:'break-word'}}>{post.content.length > 80 ? post.content.slice(0, 80) + '...' : post.content}</p>
                   <div className="engagement">
                     <span className="likes"><FaHeart /> {post.likes_count ?? 0}</span>
                     <span className="comments"><FaComment /> {post.comments_count ?? 0}</span>

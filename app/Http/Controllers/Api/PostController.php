@@ -101,7 +101,7 @@ class PostController extends Controller
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
-                'content' => 'required|string',
+                'content' => 'required|string|max:250000',
                 'category' => 'required|string|in:news,review,podcast,opinion,lifestyle',
                 'is_featured' => 'sometimes|boolean',
                 'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:51200', // 50MB
@@ -111,6 +111,7 @@ class PostController extends Controller
                 'title.max' => 'Post title cannot exceed 255 characters.',
                 'content.required' => 'Post content is required.',
                 'content.string' => 'Post content must be a valid text string.',
+                'content.max' => 'Post content cannot exceed 250000 characters.',
                 'category.required' => 'Post category is required.',
                 'category.string' => 'Post category must be a valid text string.',
                 'category.in' => 'Post category must be one of: news, review, podcast, opinion, lifestyle.',
@@ -190,7 +191,7 @@ class PostController extends Controller
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
-                'content' => 'required|string',
+                'content' => 'required|string|max:250000',
                 'category' => 'sometimes|string|in:news,review,podcast,opinion,lifestyle',
                 'is_featured' => 'sometimes|boolean',
                 'image' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp|max:51200', // 50MB
@@ -200,6 +201,7 @@ class PostController extends Controller
                 'title.max' => 'Post title cannot exceed 255 characters.',
                 'content.required' => 'Post content is required.',
                 'content.string' => 'Post content must be a valid text string.',
+                'content.max' => 'Post content cannot exceed 250000 characters.',
                 'category.string' => 'Post category must be a valid text string.',
                 'category.in' => 'Post category must be one of: news, review, podcast, opinion, lifestyle.',
                 'is_featured.boolean' => 'Featured status must be true or false.',

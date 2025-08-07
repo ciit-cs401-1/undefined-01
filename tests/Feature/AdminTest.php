@@ -262,7 +262,7 @@ class AdminTest extends TestCase
 
         $response = $this->postJson('/api/admin/site-settings', [
             'site_name' => 'Valid Site Name',
-            'site_description' => str_repeat('a', 1001) // Exceeds 1000 character limit
+            'site_description' => str_repeat('a', 100001) // Exceeds 1000 character limit
         ]);
 
         $response->assertStatus(422)
