@@ -345,8 +345,8 @@ const Posts = ({ refresh }) => {
                     }}
                   />
                 )}
-                <div className="post-details" style={{flex:1,minWidth:0}}>
-                  <div style={{display:'flex',alignItems:'flex-start',gap:8,marginBottom:2,flexWrap:'wrap'}}>
+                <div className="post-details">
+                  <div>
                     <Link
                       to={`/blog/post/${post.id}`}
                       style={{
@@ -354,29 +354,31 @@ const Posts = ({ refresh }) => {
                         fontSize:'1.05rem',
                         color:'#222',
                         textDecoration:'none',
-                        flexShrink:0,
                         cursor:'pointer',
-                        zIndex:10
+                        display:'block',
+                        marginBottom:'0.25rem'
                       }}
                     >
                       {post.title}
                     </Link>
                     {post.category && (
-                      <span style={{background:'#f0f9ff',color:'#0369a1',padding:'2px 8px',borderRadius:'12px',fontSize:'0.8rem',fontWeight:500,flexShrink:0}}>{post.category}</span>
+                      <span style={{background:'#f0f9ff',color:'#0369a1',padding:'2px 8px',borderRadius:'12px',fontSize:'0.75rem',fontWeight:500,marginBottom:'0.5rem',display:'inline-block'}}>{post.category}</span>
                     )}
-
                   </div>
-                  <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4,flexWrap:'wrap'}}>
-                    <div style={{display: 'flex', alignItems: 'center'}}>
-                      <span style={{color:'#888',fontSize:'0.92rem'}}>👤 {post.user?.name || 'Unknown'}</span>
-                      <RoleBadge role={post.user?.role} className="role-badge-small" />
-                    </div>
-                    <span style={{color:'#bbb',fontSize:'0.9rem'}}>📅 {new Date(post.created_at).toLocaleDateString()}</span>
+                  
+                  <div className="post-metadata">
+                    <span>👤 {post.user?.name || 'Unknown'}</span>
+                    <RoleBadge role={post.user?.role} className="role-badge-small" />
+                    <span>📅 {new Date(post.created_at).toLocaleDateString()}</span>
                     {post.views !== undefined && (
-                      <span style={{color:'#bbb',fontSize:'0.9rem'}}>👁️ {post.views} views</span>
+                      <span>👁️ {post.views} views</span>
                     )}
                   </div>
-                  <p style={{margin:'2px 0 0 0',fontSize:'0.97rem',color:'#444',lineHeight:'1.4',whiteSpace:'pre-wrap',wordBreak:'break-word'}}>{post.content.length > 80 ? post.content.slice(0, 80) + '...' : post.content}</p>
+                  
+                  <div className="post-content-preview" style={{fontSize:'0.95rem',color:'#444'}}>
+                    {post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}
+                  </div>
+                  
                   <div className="engagement">
                     <span className="likes"><FaHeart /> {post.likes_count ?? 0}</span>
                     <span className="comments"><FaComment /> {post.comments_count ?? 0}</span>

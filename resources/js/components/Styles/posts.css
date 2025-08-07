@@ -207,13 +207,15 @@ span, p{
 /* Main content layout */
 .posts-main-content {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
+  min-height: 0; /* Prevent flex items from overflowing */
 }
 
 .category-cont {
   padding-right: 1rem;
   border-right: solid rgba(28, 4, 59, 0.219);
   flex: 1;
+  min-width: 200px; /* Ensure minimum width */
 }
 
 .categories {
@@ -242,10 +244,89 @@ span, p{
   flex: 3;
   padding-right: 1rem;
   border-right: solid rgba(28, 4, 59, 0.219);
+  min-width: 0; /* Allow flex item to shrink */
 }
 
 .trending-posts {
   flex: 1;
+  min-width: 250px; /* Ensure minimum width for trending section */
+  padding-left: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .posts-main-content {
+    gap: 1.5rem;
+  }
+  
+  .trending-posts {
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 992px) {
+  .posts-main-content {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .category-cont,
+  .recent-posts {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid rgba(28, 4, 59, 0.219);
+    padding-bottom: 1rem;
+  }
+  
+  .trending-posts {
+    padding-left: 0;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 768px) {
+  .posts-main-content {
+    gap: 1.5rem;
+  }
+  
+  .recent-post-card {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    min-height: 100px;
+  }
+  
+  .post-img {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .post-details {
+    gap: 0.25rem;
+  }
+  
+  .engagement {
+    gap: 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .recent-post-card {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  
+  .post-img {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .post-details a {
+    white-space: normal;
+    line-height: 1.3;
+  }
 }
 
 .section-header {
@@ -308,24 +389,23 @@ span, p{
 
 /* Posts start here */
 .recent-post-card {
-  min-height: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Changed from center to flex-start */
   border: solid 1px #c0c0c0;
   border-radius: 12px;
-  padding: 0.7rem 1rem;
+  padding: 1rem;
   margin-top: 1rem;
   margin-bottom: 1.5rem;
   box-shadow: .3rem .3rem 8px #b7b5c9;
   background: #fff;
-  /* gap: 1.2rem; */
-  min-height: 110px;
+  min-height: 120px;
+  gap: 1rem; /* Added gap for better spacing */
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .post-img {
-  width: 70px;
-  height: 70px;
-  margin-right: 1rem;
+  width: 80px;
+  height: 80px;
   border-radius: 8px;
   object-fit: cover;
   flex-shrink: 0;
@@ -335,43 +415,88 @@ span, p{
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  min-height: 80px;
+  min-width: 0; /* Allow content to shrink */
+  overflow: hidden; /* Prevent overflow */
+  gap: 0.5rem; /* Add spacing between elements */
 }
 
 .post-details h3 {
   font-family: "Nunito Bold";
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .post-details small {
   color: #666;
 }
 
+/* Add styles for post title links to prevent overflow */
+.post-details a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 100%;
+}
+
+/* Style for post content preview */
+.post-content-preview {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  margin: 0.25rem 0;
+}
+
+/* Style for post metadata row */
+.post-metadata {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.post-metadata > * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .engagement {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 1.1rem;
-  font-size: 0.93rem;
+  justify-content: flex-start; /* Changed from flex-end */
+  gap: 1rem;
+  font-size: 0.85rem;
   color: #888;
-  width: 100%;
-  box-sizing: border-box;
   margin-top: auto;
-  margin-bottom: 0.1rem;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  padding-top: 0.5rem;
 }
+
 .engagement .likes, .engagement .comments, .engagement .views {
   display: flex;
   align-items: center;
-  gap: 0.18rem;
+  gap: 0.3rem;
+  white-space: nowrap;
 }
+
 .engagement svg {
-  font-size: 1.05em;
+  font-size: 1em;
   vertical-align: middle;
   color: #b0b0b0;
+  flex-shrink: 0;
 }
+
 .engagement span {
-  font-size: 0.97em;
+  font-size: 0.9em;
   color: #666;
 }
 
@@ -385,26 +510,52 @@ span, p{
   border-radius: 8px;
   font-size: 0.9rem;
   box-shadow: .3rem .3rem 8px #b7b5c9;
+  min-width: 0; /* Allow content to shrink */
+  overflow: hidden; /* Prevent content overflow */
+}
+
+.trend-content {
+  flex: 1;
+  min-width: 0; /* Allow content to shrink */
+  margin-right: 0.5rem;
 }
 
 .trend-content h4 {
   font-family: "Nunito Bold";
   margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .trend-content p {
-  margin: 0;
+  margin: 0.25rem 0 0.5rem 0;
   font-size: 0.8rem;
   color: #555;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .trend-engagement {
   display: flex;
   align-items: center;
   color: #555;
-  gap: 1rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+
+.trend-engagement span {
+  white-space: nowrap;
 }
 
 .chevron {
   color: #555;
+  flex-shrink: 0;
 }
